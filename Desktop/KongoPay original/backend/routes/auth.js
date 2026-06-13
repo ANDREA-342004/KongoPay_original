@@ -10,7 +10,7 @@ router.post('/register', async (req, res) => {
   try {
     const hashedPin = await bcrypt.hash(pin, 10);
     const result = await pool.query(
-      `INSERT INTO utilisateurs (nom, telephone, pin) 
+      `INSERT INTO utilisateur (nom, telephone, hash_pin) 
        VALUES ($1, $2, $3) RETURNING *`,
       [nom, telephone, hashedPin]
     );
@@ -28,14 +28,14 @@ router.post('/login', async (req, res) => {
   const { telephone, pin } = req.body;
   try {
     const result = await pool.query(
-      'SELECT * FROM utilisateurs WHERE telephone = $1',
+      'SELECT * FROM utilisateur WHERE telephone = $1',
       [telephone]
     );
     if (result.rows.length === 0)
       return res.status(404).json({ error: 'Utilisateur non trouvé' });
 
     const user = result.rows[0];
-    const validPin = await bcrypt.compare(pin, user.pin);
+    const validPin = await bcrypt.compare(pin, user.hash_pin);
     if (!validPin)
       return res.status(401).json({ error: 'PIN incorrect' });
 
