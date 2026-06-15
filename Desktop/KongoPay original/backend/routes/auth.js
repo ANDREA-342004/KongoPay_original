@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const verifierToken = require('../middleware/auth');
 // REGISTER
 router.post('/register', async (req, res) => {
   const { nom, telephone, pin } = req.body;
@@ -49,5 +49,28 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+// ROUTE COMPLIANCE (superviseurs uniquement)
+router.get('/compliance/investigations', verifierToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT 
+        t.id_transaction,
+        t.nom,
+        t.montant,
+        t.motif_transaction,
+        t.date_transaction,
+        t.annuler,
+        t.memoire_double_depot,
+        w1.nom as wallet_source_nom,
+        w2.nom as wallet_destination_nom
+       FROM transaction t
+       JOIN wallet w1 ON t.wallet_source = w1.id_wallet
+       JOIN wallet w2 ON t.wallet_destination = w2.id_wallet
+       ORDER BY t.date_transaction DESC`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;

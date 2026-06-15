@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
+const verifierToken = require('../middleware/auth');
 
-// CRÉER UN WALLET
-router.post('/create', async (req, res) => {
-  const { utilisateur_id } = req.body;
+// CRÉER UN WALLET (protégé)
+router.post('/create', verifierToken, async (req, res) => {
+  const { id_utilisateur } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO wallets (utilisateur_id, solde, devise) 
-       VALUES ($1, 0, 'FCFA') RETURNING *`,
-      [utilisateur_id]
+      `INSERT INTO wallet (nom, solde, devise, id_utilisateur) 
+       VALUES ($1, 0, 'FCFA', $2) RETURNING *`,
+      [`Wallet ${id_utilisateur}`, id_utilisateur]
     );
     res.status(201).json({ 
       message: '✅ Wallet créé !', 
@@ -20,12 +21,12 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// VOIR LE SOLDE
-router.get('/:id/balance', async (req, res) => {
+// VOIR LE SOLDE (protégé)
+router.get('/:id/balance', verifierToken, async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
-      'SELECT solde, devise FROM wallets WHERE id = $1',
+      'SELECT solde, devise FROM wallet WHERE id_wallet = $1',
       [id]
     );
     if (result.rows.length === 0)
