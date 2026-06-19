@@ -1,0 +1,383 @@
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="search.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <title>KongoPay Recherche</title>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo">
+      <img src="logo.png" alt="KongoPay" style="height: 50px;">
+    </div>
+    <div class="sidebar-role">Espace Superviseur</div>
+    <nav>
+      <a class="nav-item" href="dashboard.html"><span class="icon">📊</span> Tableau de bord</a>
+      <a class="nav-item active" href="search.html"><span class="icon"><i class="fa-solid fa-magnifying-glass" style="color: rgb(6, 108, 22);"></i></span> Recherche & Flux</a>
+      <a class="nav-item" href="#"><span class="icon"><i class="fa-solid fa-bell" style="color: hsl(351, 85%, 48%);"></i></span> Alertes</a>
+      <a class="nav-item" href="#"><span class="icon"><i class="fa-solid fa-file"></i></span> Rapports</a>
+      <a class="nav-item" href="index.html"><span class="icon"><i class="fa-solid fa-house" style="color: rgb(255, 212, 59);"></i></span> Portail Public</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="agent-badge">
+        <div class="agent-avatar">BC</div>
+        <div>
+          <div class="agent-name">Agent BCRC</div>
+          <div>Superviseur·e</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+
+    <div class="topbar">
+      <h1>Moteur de Recherche Transactionnel</h1>
+    </div>
+    <div class="search-section">
+      <div class="search-box">
+        <div class="search-row">
+          <div class="search-field">
+            <label>ID Wallet / Référence TX</label>
+            <input type="text" id="q-wallet" placeholder="KP-XXX, TX-00391…" />
+          </div>
+          <div class="search-field">
+            <label>Description / Ville</label>
+            <input type="text" id="q-desc" placeholder="Marché, Brazzaville…" />
+          </div>
+          <div class="search-field" style="max-width:150px;">
+            <label>Statut</label>
+            <select id="q-statut">
+              <option value="">Tous</option>
+              <option value="valide">Validée</option>
+              <option value="suspect">Suspecte</option>
+              <option value="en_cours">En cours</option>
+            </select>
+          </div>
+          <div class="search-field" style="max-width:160px;">
+            <label>Profil</label>
+            <select id="q-profil">
+              <option value="">Tous</option>
+              <option value="standard">Standard</option>
+              <option value="commercant">Commerçant</option>
+              <option value="agent">Agent</option>
+            </select>
+          </div>
+          <div class="search-field" style="max-width:150px;">
+            <label>Montant min (FCFA)</label>
+            <input type="number" id="q-montant" placeholder="0" />
+          </div>
+          <button class="btn-search" id="btnSearch"><i class="fa-solid fa-magnifying-glass" style="color: rgb(6, 108, 22);"></i> Rechercher</button>
+          <button class="btn-reset" id="btnReset">Réinitialiser</button>
+        </div>
+      </div>
+      <div class="quick-filters">
+        <button class="qf active" data-filter="tous">Tous les flux</button>
+        <button class="qf" data-filter="suspect"><i class="fa-solid fa-circle" style="color: rgb(226, 18, 50);"></i> Suspects uniquement</button>
+        <button class="qf" data-filter="circulaire"><i class="fa-solid fa-triangle-exclamation" style="color: rgb(255, 212, 59);"></i> Transactions circulaires</button>
+        <button class="qf" data-filter="plafond"><i class="fa-solid fa-file" style="color: rgb(236, 242, 237);"></i> Dépassement plafond</button>
+        <button class="qf" data-filter="pn"><i class="fa-solid fa-location-dot" style="color: rgb(6, 108, 22);"></i> Pointe-Noire</button>
+        <button class="qf" data-filter="bzv"><i class="fa-solid fa-location-dot" style="color: rgb(6, 108, 22);"></i> Brazzaville</button>
+      </div>
+    </div>
+    <div class="fraude-alert" id="fraudeAlert">
+      <div class="fraude-alert-title"><i class="fa-solid fa-triangle-exclamation" style="color: rgb(255, 212, 59);"></i> Schéma de blanchiment détecté — Transactions circulaires</div>
+      <p>Le moteur a scanné l'ensemble du grand livre PostgreSQL et identifié un réseau de <strong>3 portefeuilles liés</strong> par des transactions circulaires répétées sur 48h. Ces wallets se transfèrent mutuellement des fonds pour brouiller l'origine des FCFA.</p>
+      <div class="fraude-wallets" id="fraudeWallets"></div>
+    </div>
+    <div class="results-header">
+      <div class="results-count">Résultats : <strong id="resultsCount">0</strong> transaction(s) trouvée(s)</div>
+      <div style="font-size:.73rem;color:var(--txt-mute)" id="searchInfo"></div>
+    </div>
+
+    <div class="panel" id="resultsPanel">
+      <div class="empty-state" id="emptyState">
+        <div class="icon"><i class="fa-solid fa-magnifying-glass" style="color: rgb(6, 108, 22);"></i></div>
+        <p>Lancez une recherche pour explorer le grand livre transactionnel.</p>
+      </div>
+      <table id="resultsTable" style="display:none;">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Description</th>
+            <th>Montant</th>
+            <th>Statut</th>
+            <th>Profil</th>
+            <th>Ville</th>
+            <th>Surveiller</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+    <div class="bottom-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><i class="fa-solid fa-flag fa-sm" style="color: rgb(226, 18, 50);"></i> Comptes sous Surveillance</div>
+          <span style="font-size:.73rem;color:var(--txt-mute)" id="survCount">0</span>
+        </div>
+        <div id="survContainer">
+          <div class="empty-msg">Aucun compte marqué. Utilisez <i class="fa-solid fa-flag fa-sm" style="color: rgb(226, 18, 50);"></i> dans les résultats.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">📊 Statistiques Grand Livre</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-row-label">Total des transactions</div>
+          <div class="stat-row-val" id="statTotal">—</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-row-label">Volume total (FCFA)</div>
+          <div class="stat-row-val" id="statVolume">—</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-row-label">Transactions suspectes</div>
+          <div class="stat-row-val" style="color:var(--rouge)" id="statSuspect">—</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-row-label">Montant moyen</div>
+          <div class="stat-row-val" id="statMoyen">—</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-row-label">Plus grande transaction</div>
+          <div class="stat-row-val" style="color:var(--orange)" id="statMax">—</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const fmt = n => n.toLocaleString('fr-FR') + ' FCFA';
+const statutBadge = {
+  valide:   '<span class="badge badge-vert">Validée</span>',
+  suspect:  '<span class="badge badge-rouge">Suspecte</span>',
+  en_cours: '<span class="badge badge-bleu">En cours</span>',
+};
+const profilHtml = {
+  standard:  '<span class="profile-dot dot-standard"></span>Standard',
+  commercant:'<span class="profile-dot dot-commercant"></span>Commerçant',
+  agent:     '<span class="profile-dot dot-agent"></span>Agent',
+};
+let surv = JSON.parse(localStorage.getItem('kp_surveillance') || '[]');
+
+function saveSurv() { localStorage.setItem('kp_surveillance', JSON.stringify(surv)); }
+
+function addSurv(wallet, desc) {
+  if (!surv.find(s => s.wallet === wallet)) {
+    surv.push({ wallet, nom: desc.split('–')[0].trim(), added: new Date().toISOString() });
+    saveSurv(); renderSurv();
+    showToast('🚩 ' + wallet + ' ajouté à la surveillance');
+  } else {
+    showToast('⚠️ Déjà sous surveillance');
+  }
+}
+
+function removeSurv(i) {
+  surv.splice(i, 1);
+  saveSurv(); renderSurv();
+}
+
+function renderSurv() {
+  const c = document.getElementById('survContainer');
+  document.getElementById('survCount').textContent = surv.length;
+  if (!surv.length) {
+    c.innerHTML = '<div class="empty-msg">Aucun compte marqué.</div>';
+    return;
+  }
+  c.innerHTML = surv.map((s,i) => `
+    <div class="surv-item">
+      <div>
+        <div class="surv-id">${s.wallet}</div>
+        <div class="surv-name">${s.nom}</div>
+      </div>
+      <span class="surv-remove" onclick="removeSurv(${i})">✕</span>
+    </div>
+  `).join('');
+}
+
+const API = 'http://localhost:3000/api';
+const token = localStorage.getItem('kp_token');
+if (!token) window.location.href = 'index.html';
+
+async function chargerTransactions() {
+  const walletId = document.getElementById('q-wallet').value.trim() || localStorage.getItem('kp_wallet_id') || '1';
+  try {
+    const res = await fetch(`${API}/transaction/${walletId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (res.status === 401 || res.status === 403) {
+      showToast('❌ Session expirée — reconnectez-vous');
+      setTimeout(() => window.location.href = 'index.html', 1500);
+      return [];
+    }
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    showToast('❌ Erreur : ' + err.message);
+    return [];
+  }
+}
+async function doSearch(pool) {
+  let data = pool;
+  if (!data) {
+    showToast('⏳ Chargement...');
+    data = await chargerTransactions();
+  }
+
+  const q1  = document.getElementById('q-wallet').value.trim().toLowerCase();
+  const q2  = document.getElementById('q-desc').value.trim().toLowerCase();
+  const qSt = document.getElementById('q-statut').value;
+  const qMt = parseFloat(document.getElementById('q-montant').value) || 0;
+
+  const results = data.filter(tx => {
+    const walletSrc = String(tx.wallet_source || '').toLowerCase();
+    const walletDst = String(tx.wallet_destination || '').toLowerCase();
+    const motif     = String(tx.motif_transaction || tx.nom || '').toLowerCase();
+    const idTx      = String(tx.id_transaction || '').toLowerCase();
+
+    if (q1 && !idTx.includes(q1) && !walletSrc.includes(q1) && !walletDst.includes(q1)) return false;
+    if (q2 && !motif.includes(q2)) return false;
+    if (qSt === 'suspect' && !(tx.annuler === true || tx.memoire_double_depot === true)) return false;
+    if (qSt === 'valide' && (tx.annuler === true)) return false;
+    if (Number(tx.montant) < qMt) return false;
+    return true;
+  });
+
+  renderResults(results);
+  updateStats(results);
+}
+
+function renderResults(results) {
+  document.getElementById('resultsCount').textContent = results.length;
+  const empty = document.getElementById('emptyState');
+  const table = document.getElementById('resultsTable');
+  const tbody = document.getElementById('resultsBody');
+
+  if (!results.length) {
+    empty.innerHTML = '<div class="icon">🔍</div><p>Aucune transaction ne correspond à vos critères.</p>';
+    empty.style.display = 'block';
+    table.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  table.style.display = 'table';
+
+  tbody.innerHTML = results.map(tx => {
+    const estSuspect = tx.annuler === true || tx.memoire_double_depot === true;
+    const statut     = estSuspect ? 'suspect' : 'valide';
+    const walletSrc  = String(tx.wallet_source || '—');
+    const walletDst  = String(tx.wallet_destination || '—');
+    const isSurvItem = !!surv.find(s => s.wallet === walletSrc);
+    const isDouble   = tx.memoire_double_depot === true;
+
+    return `
+      <tr class="${isDouble ? 'highlighted' : ''}">
+        <td class="tx-id">${tx.id_transaction || '—'}${isDouble ? ' <span style="color:var(--rouge);font-size:.68rem;">⚠️ DOUBLE</span>' : ''}</td>
+        <td>
+          <div class="tx-desc">${tx.motif_transaction || tx.nom || '—'}</div>
+          <div class="tx-wallet">${walletSrc} → ${walletDst}</div>
+        </td>
+        <td><span class="amount debit">-${fmt(tx.montant)}</span></td>
+        <td>${statutBadge[statut]}</td>
+        <td><span class="profile-dot dot-standard"></span>Standard</td>
+        <td style="font-size:.78rem;">${tx.date_transaction ? new Date(tx.date_transaction).toLocaleDateString('fr-FR') : '—'}</td>
+        <td>
+          <button class="flag-btn ${isSurvItem ? 'flagged' : ''}" onclick="addSurv('${walletSrc}','${(tx.motif_transaction||'').replace(/'/g,"\\'")}')">
+            ${isSurvItem ? '🚩 Marqué' : '🚩'}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function updateStats(results) {
+  if (!results.length) {
+    ['statTotal','statVolume','statSuspect','statMoyen','statMax'].forEach(id => document.getElementById(id).textContent = '—');
+    return;
+  }
+  const total   = results.length;
+  const volume  = results.reduce((s,t) => s + Number(t.montant||0), 0);
+  const suspects= results.filter(t => t.annuler === true || t.memoire_double_depot === true).length;
+  const moyen   = Math.round(volume / total);
+  const max     = Math.max(...results.map(t => Number(t.montant||0)));
+  document.getElementById('statTotal').textContent   = total;
+  document.getElementById('statVolume').textContent  = fmt(volume);
+  document.getElementById('statSuspect').textContent = suspects;
+  document.getElementById('statMoyen').textContent   = fmt(moyen);
+  document.getElementById('statMax').textContent     = fmt(max);
+}
+async function quickFilter(type, btn) {
+  document.querySelectorAll('.qf').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('q-wallet').value = '';
+  document.getElementById('q-desc').value   = '';
+  document.getElementById('q-statut').value = '';
+  document.getElementById('q-montant').value = '';
+  document.getElementById('fraudeAlert').classList.remove('visible');
+
+  const data = await chargerTransactions();
+
+  if (type === 'tous') { renderResults(data); updateStats(data); return; }
+
+  if (type === 'suspect') {
+    const pool = data.filter(t => t.annuler === true || t.memoire_double_depot === true);
+    renderResults(pool); updateStats(pool); return;
+  }
+
+  if (type === 'circulaire') {
+    const pool = data.filter(t => t.memoire_double_depot === true);
+    renderResults(pool); updateStats(pool);
+    if (pool.length) {
+      document.getElementById('fraudeAlert').classList.add('visible');
+      const wallets = [...new Set(pool.map(t => String(t.wallet_source)))];
+      document.getElementById('fraudeWallets').innerHTML = wallets.map(w =>
+        `<span class="fraude-wallet-tag">${w}</span>`).join('');
+    }
+    return;
+  }
+
+  if (type === 'plafond') {
+    const pool = data.filter(t => Number(t.montant) >= 200000);
+    renderResults(pool); updateStats(pool);
+    document.getElementById('searchInfo').textContent = 'Seuil : ≥ 200 000 FCFA';
+    return;
+  }
+
+  renderResults(data); updateStats(data);
+}
+
+function resetSearch() {
+  document.getElementById('q-wallet').value  = '';
+  document.getElementById('q-desc').value    = '';
+  document.getElementById('q-statut').value  = '';
+  document.getElementById('q-montant').value = '';
+  document.getElementById('searchInfo').textContent = '';
+  document.getElementById('fraudeAlert').classList.remove('visible');
+  document.querySelectorAll('.qf').forEach((b,i) => b.classList.toggle('active', i===0));
+  document.getElementById('resultsCount').textContent = '0';
+  document.getElementById('emptyState').innerHTML = '<div class="icon">🔍</div><p>Lancez une recherche pour explorer le grand livre transactionnel.</p>';
+  document.getElementById('emptyState').style.display = 'block';
+  document.getElementById('resultsTable').style.display = 'none';
+  ['statTotal','statVolume','statSuspect','statMoyen','statMax'].forEach(id => document.getElementById(id).textContent = '—');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3000);
+}
+renderSurv();
+chargerTransactions().then(data => { renderResults(data); updateStats(data); });
+</script>
+</body>
+</html>

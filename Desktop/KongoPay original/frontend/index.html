@@ -1,0 +1,204 @@
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="kongopay.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/png" href="logo_rel.png">
+  <title>Kongo-Pay</title>
+</head>
+
+<body>
+  <nav>
+    <div class="logo">
+      <img src="logo.png" alt="KongoPay" style="height: 50px;">
+    </div>
+    <div class="nav-links">
+      <a href="dashboard.html">Superviseur</a>
+      <a href="search.html">Recherche</a>
+      <a href="#wallet" class="btn-nav">Ouvrir un compte</a>
+    </div>
+  </nav>
+  <section class="hero">
+
+  </section>
+  <section class="hero">
+    <div class="hero-badge">
+      <img src="logo.png" alt="">
+    </div>
+    <h1>Votre argent,<br /><em>enfin souverain</em></h1>
+    <p>Transferts instantanés, paiements QR Code, et gestion de portefeuille, pensés pour Pointe-Noire, Brazzaville et
+      toute la République du Congo.</p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">0 FCFA</div>
+        <div class="stat-lbl">Frais cachés</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num"> 3s</div>
+        <div class="stat-lbl">Par transfert</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100%</div>
+        <div class="stat-lbl">Traçable</div>
+      </div>
+    </div>
+  </section>
+  <section class="wallet-section" id="wallet">
+    <div class="card">
+      <div class="card-title">
+
+        Créer / Accéder à mon portefeuille
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-tab="creer">Nouveau compte</button>
+        <button class="tab" data-tab="connexion">Se connecter</button>
+      </div>
+      <div class="form-panel active" id="panel-creer">
+        <div id="form-creation">
+          <label>Type de compte</label>
+          <div class="account-type-grid" id="typeGrid">
+            <div class="type-option standard selected" data-type="standard">
+              <div class="type-dot"></div>Standard
+            </div>
+            <div class="type-option commercant" data-type="commercant">
+              <div class="type-dot"></div>Commerçant
+            </div>
+            <div class="type-option agent" data-type="agent">
+              <div class="type-dot"></div>Agent
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Nom complet</label>
+            <input type="text" id="fullname" placeholder="Entrez votre nom et prenom" />
+          </div>
+
+          <div class="field">
+            <label>Numéro de téléphone</label>
+            <div class="phone-row">
+              <select class="phone-prefix" title="indicatif pays">
+                <option>+242</option>
+                <option>+243</option>
+                <option>+237</option>
+              </select>
+              <input type="tel" id="phone" placeholder="06 123 45 67" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Pièce d'identité (KYC)</label>
+            <div class="kyc-upload">
+              <div class="upload-icon"><i class="fa-regular fa-address-card" style="color: rgb(99, 230, 190);"></i>
+              </div>
+              <p id="kyc-label">CNI, Passeport ou Carte de séjour — appuyez pour charger</p>
+              <input type="file" id="kyc-file" accept="image/*,.pdf" style="display:none" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Ville de résidence</label>
+            <select id="ville" title="ville de résidence">
+              <option value=""> Choisir une ville </option>
+              <option>Pointe-Noire</option>
+              <option>Brazzaville</option>
+              <option>Oyo</option>
+              <option>Dolisie</option>
+              <option>Nkayi</option>
+              <option>Ouesso</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Choisir un code PIN (4 chiffres)</label>
+            <div class="pin-row">
+              <input type="password" maxlength="1" class="pin-digit" inputmode="numeric" pattern="[0-9]*" />
+              <input type="password" maxlength="1" class="pin-digit" inputmode="numeric" pattern="[0-9]*" />
+              <input type="password" maxlength="1" class="pin-digit" inputmode="numeric" pattern="[0-9]*" />
+              <input type="password" maxlength="1" class="pin-digit" inputmode="numeric" pattern="[0-9]*" />
+            </div>
+          </div>
+
+          <button id="create-wallet-btn" class="btn-primary">Ouvrir mon portefeuille</button>
+          <p class="form-note">En créant un compte, vous acceptez les conditions d'utilisation de KongoPay et la
+            politique de conformité COBAC.</p>
+        </div>
+
+        <div class="success-screen" id="successScreen">
+          <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.2rem;margin-bottom:.5rem;">Portefeuille créé !
+          </h2>
+          <p style="color:var(--txt-mute);font-size:.85rem;">Votre identifiant de wallet unique :</p>
+          <div class="wallet-id" id="walletId">KP-</div>
+          <p style="color:var(--txt-mute);font-size:.78rem;margin-bottom:1.2rem;">Conservez cet identifiant
+            précieusement. Il vous sera demandé pour chaque transaction.</p>
+          <button id="reset-form-btn" class="btn-primary">Créer un autre compte</button>
+        </div>
+      </div>
+      <div class="form-panel" id="panel-connexion">
+        <div class="field">
+          <label>Numéro de téléphone</label>
+          <input type="tel" id="login-id" placeholder="06 123 45 67" />
+        </div>
+        <div class="field">
+          <label>Code PIN</label>
+          <div class="pin-row">
+            <input type="password" maxlength="1" class="pin-digit" inputmode="numeric" />
+            <input type="password" maxlength="1" class="pin-digit" inputmode="numeric" />
+            <input type="password" maxlength="1" class="pin-digit" inputmode="numeric" />
+            <input type="password" maxlength="1" class="pin-digit" inputmode="numeric" />
+          </div>
+        </div>
+        <button id="connexion-btn" class="btn-primary">Accéder à mon portefeuille</button>
+        <p class="form-note">Mot de passe oublié ? Contactez votre agent KongoPay le plus proche.</p>
+      </div>
+    </div>
+  </section>
+  <section class="features">
+    <h2>Pourquoi choisir KongoPay</h2>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fa-solid fa-qrcode" style="color: rgb(255, 212, 59);"></i></div>
+        <div>
+          <h3>Paiement QR Code</h3>
+          <p>Payez au Grand Marché de Tié-Tié ou chez Total Moungali sans espèces juste un scan.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fa-solid fa-bolt" style="color: rgb(255, 212, 59);"></i></div>
+        <div>
+          <h3>Transfert P2P Instantané</h3>
+          <p>Envoyez des fonds de Pointe-Noire à Brazzaville ou Oyo en moins de 3 secondes.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fa-solid fa-lock" style="color: rgb(255, 212, 59);"></i></div>
+        <div>
+          <h3>Anti-Double Dépense</h3>
+          <p>Chaque transaction est verrouillée et signée cryptographiquement : impossible de vider un portefeuille deux
+            fois.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fa-solid fa-house" style="color: rgb(255, 212, 59);"></i></div>
+        <div>
+          <h3>Conforme COBAC</h3>
+          <p>Plafonds légaux, KYC réglementaire et audit permanent supervisé par la Banque Centrale.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong style="color:var(--txt)">KongoPay</strong> · Monnaie électronique souveraine · Republic of Congo</p>
+    <p style="margin-top:.4rem"><a href="dashboard.html">Espace Superviseur</a> · <a href="search.html">Recherche
+        Transactions</a></p>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="kongopay.js"></script>
+</body>
+</html>

@@ -4,7 +4,6 @@ const pool = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const verifierToken = require('../middleware/auth');
-// REGISTER
 router.post('/register', async (req, res) => {
   const { nom, telephone, pin } = req.body;
   try {
@@ -22,8 +21,6 @@ router.post('/register', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-// LOGIN
 router.post('/login', async (req, res) => {
   const { telephone, pin } = req.body;
   try {
@@ -49,7 +46,6 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// ROUTE COMPLIANCE (superviseurs uniquement)
 router.get('/compliance/investigations', verifierToken, async (req, res) => {
   try {
     const result = await pool.query(

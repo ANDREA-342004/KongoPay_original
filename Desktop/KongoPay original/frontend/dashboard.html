@@ -1,0 +1,137 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Dashboard KongoPay</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo">
+        <img src="kongo_pay3.png" alt="KongoPay" style="height: 50px;">
+    </div>
+    <div class="sidebar-role">Espace Superviseur</div>
+    <nav>
+      <a class="nav-item active" href="dashboard.html"><span class="icon">📊</span> Tableau de bord</a>
+      <a class="nav-item" href="search.html"><span class="icon"><i class="fa-solid fa-magnifying-glass" style="color: rgb(6, 108, 22);"></i></span> Recherche & Flux</a>
+      <a class="nav-item" href="#"><span class="icon"><i class="fa-solid fa-bell" style="color: hsl(351, 85%, 48%);"></i></span> Alertes</a>
+      <a class="nav-item" href="#"><span class="icon"><i class="fa-solid fa-list"></i></span> Rapports</a>
+      <a class="nav-item" href="index.html"><span class="icon"><i class="fa-solid fa-house" style="color: rgb(18, 110, 183);"></i></span> Portail Public</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="agent-badge">
+        <div class="agent-avatar">BC</div>
+        <div>
+          <div class="agent-name">Agent BCRC</div>
+          <div>Superviseur·e</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <h1>Tableau de Bord Conformité</h1>
+      <div class="topbar-right">
+        <span id="clock">—</span>
+        <div class="live-badge"><div class="live-dot"></div>Surveillance Active</div>
+      </div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Volume Total</div>
+        <div class="kpi-val" id="kpi-volume">—</div>
+        <div class="kpi-sub">FCFA traités (grand livre)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Transactions</div>
+        <div class="kpi-val" id="kpi-total">—</div>
+        <div class="kpi-sub">dans le grand livre</div>
+      </div>
+      <div class="kpi-card alert-kpi">
+        <div class="kpi-label">Alertes Fraude</div>
+        <div class="kpi-val" id="kpi-suspects">—</div>
+        <div class="kpi-sub">transactions annulées/suspectes</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Surveillance</div>
+        <div class="kpi-val" id="kpi-surv">0</div>
+        <div class="kpi-sub">comptes marqués</div>
+      </div>
+    </div>
+    <div class="content-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Flux Suspects & Récents</div>
+          <div class="filter-tabs">
+            <button class="filter-tab tout active" data-filter="tout">Tout</button>
+            <button class="filter-tab" data-filter="suspect" style="">Suspects</button>
+            <button class="filter-tab bleu" data-filter="en_cours">En cours</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Description</th>
+              <th>Montant</th>
+              <th>Statut</th>
+              <th>Profil</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="txTable">
+          </tbody>
+        </table>
+      </div>
+      <div class="right-col">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title"> Sous Surveillance</div>
+            <span style="font-size:.73rem;color:var(--txt-mute)" id="surv-count">0 compte(s)</span>
+          </div>
+          <div class="surveillance-list" id="survList">
+            <p style="font-size:.8rem;color:var(--txt-mute);padding:.5rem .75rem;">Aucun compte marqué. Cliquez 🚩 sur une transaction pour surveiller.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Réserves de Change</div>
+          </div>
+          <div class="reserve-bar-wrap">
+            <div class="reserve-label"><span>FCFA (Portefeuilles)</span><span style="color:var(--vert)">78%</span></div>
+            <div class="reserve-bar"><div class="reserve-fill fill-vert" style="width:78%"></div></div>
+
+            <div class="reserve-label"><span>Liquidités Agents</span><span style="color:var(--orange)">52%</span></div>
+            <div class="reserve-bar"><div class="reserve-fill fill-orange" style="width:52%"></div></div>
+
+            <div class="reserve-label"><span>Fonds de Garantie</span><span style="color:var(--bleu)">91%</span></div>
+            <div class="reserve-bar"><div class="reserve-fill fill-bleu" style="width:91%"></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-title">
+      <span>Détail de la Transaction</span>
+      <span class="modal-close" id="modalClose">✕</span>
+    </div>
+    <div id="modalContent"></div>
+    <div class="modal-actions">
+      <button class="modal-btn-val" id="modalValidate">✅ Valider</button>
+      <button class="modal-btn-blk" id="modalBlock">🔒 Bloquer le Compte</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
